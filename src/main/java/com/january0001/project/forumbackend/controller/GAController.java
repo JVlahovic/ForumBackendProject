@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class GAController {
 
-        private final GAService gaService;
+    private final GAService gaService;
 
 }

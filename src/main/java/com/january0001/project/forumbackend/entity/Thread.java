@@ -3,6 +3,8 @@ package com.january0001.project.forumbackend.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.apache.commons.lang3.builder.ToStringExclude;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -12,6 +14,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@ToString
 @Entity
 @Table(name = "thread")
 @DynamicUpdate
@@ -38,13 +41,16 @@ public class Thread {
     @Column(name = "is_locked")
     private Boolean isLocked;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "thread", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> postList = new ArrayList<>();
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private ThreadCategory threadCategory;

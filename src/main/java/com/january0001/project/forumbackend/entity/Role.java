@@ -1,14 +1,15 @@
 package com.january0001.project.forumbackend.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.january0001.project.forumbackend.converter.PermissionConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.january0001.project.forumbackend.model.Permissions;
-import java.util.HashSet;
-import java.util.Set;
+import com.january0001.project.forumbackend.security.util.Permissions;
+import org.apache.commons.lang3.builder.ToStringExclude;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,10 +34,10 @@ public class Role {
     @Column(name = "permissions", columnDefinition = "JSON")
     @Convert(converter = PermissionConverter.class)
     private Permissions permissions;
-    //TODO (done this): permissions mapping. We are using a JSON, and as such, it must be specially done.
-    //TODO: STEP 2: create baseline permission stacks for admin and user
 
-    @ManyToMany(mappedBy = "roleSet")
-    private Set<User> userSet = new HashSet<>();
+    @ToStringExclude
+    @OneToMany(mappedBy = "role", cascade = CascadeType.PERSIST)
+    private List<User> userList = new ArrayList<>();
+
 
 }

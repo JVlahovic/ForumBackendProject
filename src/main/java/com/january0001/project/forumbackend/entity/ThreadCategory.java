@@ -3,6 +3,7 @@ package com.january0001.project.forumbackend.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@ToString
 @Entity
 @Table(name = "threadcategory")
 @DynamicInsert
@@ -35,6 +37,10 @@ public class ThreadCategory {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "access_ctrl")
+    private String accessCtrl;
+
+    @ToString.Exclude
     @OneToMany(mappedBy = "threadCategory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Thread> threads = new ArrayList<>();
 }

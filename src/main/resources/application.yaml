@@ -6,6 +6,7 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   liquibase:
     enabled: false
@@ -21,3 +22,8 @@ logging:
   level:
     org.springframework.com: DEBUG
     com.january0001.project.forumbackend: DEBUG
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  validity: ${JWT_VALIDITY_TIME}
+  refresh: ${JWT_REFRESH_TIME}

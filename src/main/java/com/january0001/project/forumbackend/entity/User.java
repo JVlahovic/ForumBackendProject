@@ -3,15 +3,12 @@ package com.january0001.project.forumbackend.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -23,16 +20,17 @@ import java.util.Set;
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "username", length = 50)
+    @Column(name = "username", length = 50, unique = true)
     private String username;
 
     @Column(name = "password_hash", length = 180)
     private String passwordHash;
 
-    @Column(name = "email", length = 128)
+    @Column(name = "email", length = 128, unique = true)
     private String email;
 
     @Column(name = "registration_date")
@@ -44,12 +42,9 @@ public class User {
     @Column(name = "email_verified", nullable = false)
     private Boolean emailIsVerified;
 
-    @ManyToMany
-    @JoinTable(name = "userrole",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    @ToString.Exclude
-    private Set<Role> roleSet = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
