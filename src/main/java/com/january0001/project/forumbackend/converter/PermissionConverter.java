@@ -17,7 +17,7 @@ public class PermissionConverter implements AttributeConverter<Permissions, Stri
     @Override
     public String convertToDatabaseColumn(Permissions permissions) {
         if(permissions == null) {
-            return null; //perhaps this might be worth revisiting? Maybe returning something else?
+            return "{}";
         }
         else try {
             return objectMapper.writeValueAsString(permissions);
@@ -29,8 +29,8 @@ public class PermissionConverter implements AttributeConverter<Permissions, Stri
 
     @Override
     public Permissions convertToEntityAttribute(String dataBaseData) {
-        if (dataBaseData == null || dataBaseData.isEmpty()) {
-            return null;
+        if (dataBaseData == null || dataBaseData.isEmpty() || dataBaseData.equals("{}")) {
+            return new Permissions();
         } else try {
             return objectMapper.readValue(dataBaseData, Permissions.class);
         } catch (JacksonException e) {

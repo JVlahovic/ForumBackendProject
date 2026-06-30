@@ -4,6 +4,7 @@ import com.january0001.project.forumbackend.security.filter.JWTRequestFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,7 +22,7 @@ public class SecurityConfig {
 
     private final JWTRequestFilter jwtRequestFilter;
 
-    //Dev bypass is in fact disabled now, we're no longer permitting changes on a whim..
+    //Dev bypass is in fact disabled now, we're no longer permitting changes on a whim.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JWTRequestFilter jWTRequestFilter) throws Exception {
         httpSecurity
@@ -29,7 +30,8 @@ public class SecurityConfig {
                 .headers(headers -> headers.contentSecurityPolicy(csp -> csp
                         .policyDirectives("default-src 'self'; script-src 'self'; style-src 'self';")))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/api/register", "/api/login/").permitAll()
+                        .requestMatchers("/api/register", "/api/login").permitAll() // issue encountered here when making /api/login where an extra slash caused a 403. Make sure that the mapping matches 1:1.
+                        .requestMatchers(HttpMethod.GET, "/api/thread-categories", "/api/threads/category/{categoryId}").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

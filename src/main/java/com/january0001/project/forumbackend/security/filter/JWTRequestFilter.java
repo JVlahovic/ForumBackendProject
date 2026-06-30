@@ -1,5 +1,6 @@
 package com.january0001.project.forumbackend.security.filter;
 
+import com.january0001.project.forumbackend.security.service.UserDetailService;
 import com.january0001.project.forumbackend.security.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,13 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -24,6 +24,7 @@ import java.util.List;
 public class JWTRequestFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final UserDetailService userDetailService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -42,11 +43,12 @@ public class JWTRequestFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            UserDetails userDetails = userDetailService.loadUserByUsername(username);
+
             log.info("JWT validated successfully for user {}. SecurityContext granted.", username);
 
-            SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("ROLE_USER" + jwtUtil.yoinkRole(jwt));
-
-            UsernamePasswordAuthenticationToken authenticationTok = new UsernamePasswordAuthenticationToken(username, null, List.of(simpleGrantedAuthority));
+            UsernamePasswordAuthenticationToken authenticationTok = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             authenticationTok.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             SecurityContextHolder.getContext().setAuthentication(authenticationTok);

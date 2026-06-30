@@ -9,7 +9,7 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateForumThreadDTO {
+public class ThreadPostDTO {
 
     @NotBlank(message = "Thread title cannot be empty")
     @Size(max = 256, message = "Title cannot exceed 256 characters")

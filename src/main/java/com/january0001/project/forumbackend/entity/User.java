@@ -44,7 +44,7 @@ public class User {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
+    private Role role; //hibernate hates me here because fetchType by default is lazy, when I need it not to be. Fixed with a proper query in the repo.
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
