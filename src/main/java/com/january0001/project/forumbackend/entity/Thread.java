@@ -23,6 +23,7 @@ import java.util.List;
 public class Thread {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 

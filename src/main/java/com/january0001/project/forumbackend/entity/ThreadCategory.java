@@ -22,6 +22,7 @@ import java.util.List;
 public class ThreadCategory {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -39,6 +40,9 @@ public class ThreadCategory {
 
     @Column(name = "access_ctrl")
     private String accessCtrl;
+
+    @Column(name = "post_ctrl")
+    private String postCtrl;
 
     @ToString.Exclude
     @OneToMany(mappedBy = "threadCategory", cascade = CascadeType.ALL, orphanRemoval = true)

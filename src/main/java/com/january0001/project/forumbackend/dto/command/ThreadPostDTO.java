@@ -24,7 +24,4 @@ public class ThreadPostDTO {
     private Boolean isPinned = false;
     private Boolean isLocked = false;
 
-    //prototype here, but mapper will contain things that have to be resolved from security
-    //note to self: return here once done with that part...
-
 }

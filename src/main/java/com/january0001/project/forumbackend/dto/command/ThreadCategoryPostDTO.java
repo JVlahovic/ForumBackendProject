@@ -13,5 +13,6 @@ public class ThreadCategoryPostDTO {
     private String description;
     private Integer position;
     private String accessCtrl;
+    private String postCtrl;
 
 }
