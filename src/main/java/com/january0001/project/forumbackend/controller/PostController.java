@@ -1,5 +1,6 @@
 package com.january0001.project.forumbackend.controller;
 
+import com.january0001.project.forumbackend.security.component.SecurityUtil;
 import com.january0001.project.forumbackend.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/posts")
 @RequiredArgsConstructor
 @Slf4j
-public class ForumPostController {
+public class PostController {
 
     private final PostService postService;
-
+    private final SecurityUtil securityUtil;
 
 
 

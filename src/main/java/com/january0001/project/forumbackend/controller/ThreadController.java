@@ -1,12 +1,20 @@
 package com.january0001.project.forumbackend.controller;
 
+import com.january0001.project.forumbackend.dto.command.PostPostDTO;
 import com.january0001.project.forumbackend.dto.command.ThreadPostDTO;
+import com.january0001.project.forumbackend.dto.gate.ThreadGateDTO;
+import com.january0001.project.forumbackend.dto.query.PostGetDTO;
 import com.january0001.project.forumbackend.dto.query.ThreadGetDTO;
+import com.january0001.project.forumbackend.repository.PostRepository;
 import com.january0001.project.forumbackend.security.component.SecurityUtil;
+import com.january0001.project.forumbackend.service.PostService;
 import com.january0001.project.forumbackend.service.ThreadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +32,8 @@ public class ThreadController {
 
     private final ThreadService threadService;
     private final SecurityUtil securityUtil;
+    private final PostService postService;
+    private final PostRepository postRepository;
 
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<ThreadGetDTO>> getThreadsByCategory(@PathVariable Integer categoryId, Authentication authentication) {
@@ -75,11 +85,68 @@ public class ThreadController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PatchMapping("/pin/{threadId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ThreadGetDTO> togglePin(@PathVariable Integer threadId) {
+        ThreadGetDTO response = threadService.togglePin(threadId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
+    @PatchMapping("/lock/{threadId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ThreadGetDTO> toggleLock(@PathVariable Integer threadId) {
+        ThreadGetDTO response = threadService.toggleLock(threadId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
+    //POSTS GO BELOW, FOR BETTER ROUTING
 
+    @GetMapping("/{threadId}/posts")
+    public ResponseEntity<Page<PostGetDTO>> getPostsByThreadId(@PathVariable Integer threadId, @PageableDefault(size = 10) Pageable pageable, Authentication authentication) {
 
+        String accessCtrl = postService.getHostCategoryAccessCtrl(threadId);
 
+        if(!securityUtil.hasCategoryAccess(accessCtrl, authentication)) {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication is required to view this post. (Registered users only)");
+            }
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Permission to view post is denied.");
+        }
+
+        Page<PostGetDTO> response = postService.getPostsByThreadId(threadId, pageable);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/{threadId}/posts")
+    public ResponseEntity<PostGetDTO> createPost(@PathVariable Integer threadId, @Valid @RequestBody PostPostDTO postPostDTO, Authentication authentication) {
+        if(authentication == null || !authentication.isAuthenticated()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication is required to post replies here. (Registered users only)");
+        }
+
+        boolean canPost = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("post:create"));
+
+        if(!canPost) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to post here.");
+        }
+
+        ThreadGateDTO gate = postService.getThreadGateDataDTO(threadId);
+
+        if(!securityUtil.hasCategoryAccess(gate.getAccessCtrl(), authentication)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to view or post here.");
+        }
+
+        if(!securityUtil.hasPostAccess(gate.getPostCtrl(), authentication)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to post here.");
+        }
+
+        if(gate.getIsLocked() && !securityUtil.hasModOrAdminAuthority(authentication)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This thread is locked, and only admins or mods can add new content to it.");
+        }
+
+        PostGetDTO response = postService.createPost(postPostDTO, threadId, authentication);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+    }
 
 
 

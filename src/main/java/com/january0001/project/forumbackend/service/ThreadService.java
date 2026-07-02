@@ -79,4 +79,16 @@ public class ThreadService {
         Thread thread = threadRepository.findById(threadId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not delete thread: thread not found"));
         threadRepository.delete(thread);
     }
+
+    public ThreadGetDTO togglePin(Integer threadId) {
+        Thread thread = threadRepository.findById(threadId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not toggle pin: thread not found"));
+        thread.setIsPinned(!thread.getIsPinned());
+        return threadMapper.toDto(threadRepository.save(thread));
+    }
+
+    public ThreadGetDTO toggleLock(Integer threadId) {
+        Thread thread = threadRepository.findById(threadId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not toggle lock: thread not found"));
+        thread.setIsLocked(!thread.getIsLocked());
+        return threadMapper.toDto(threadRepository.save(thread));
+    }
 }
