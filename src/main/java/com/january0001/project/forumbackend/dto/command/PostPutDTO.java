@@ -4,15 +4,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostPostDTO {
+public class PostPutDTO {
 
-    @NotBlank(message = "Reply cannot be empty.")
+    @NotBlank(message = "Reply edit cannot be empty.")
     @Size(max = 4096, message = "Title cannot exceed 4096 characters.")
     private String content;
 

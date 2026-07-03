@@ -1,7 +1,9 @@
 package com.january0001.project.forumbackend.security.component;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 @Component
 public class SecurityUtil {
@@ -31,6 +33,14 @@ public class SecurityUtil {
             return false;
         }
         return authentication != null && authentication.isAuthenticated() && authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(postCtrl));
+    }
+
+    //this one has a TON of usages, and will likely have a ton more. Absolute lifesaver.
+    //Note to self: custom message compatibility would be sick as hell here. At the end, check if you can make that (should be ez)
+    public void requireAuthentication(Authentication authentication) {
+        if(authentication == null || !authentication.isAuthenticated()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication is required for this resource!");
+        }
     }
 
 }

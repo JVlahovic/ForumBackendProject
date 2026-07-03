@@ -33,7 +33,6 @@ public class ThreadController {
     private final ThreadService threadService;
     private final SecurityUtil securityUtil;
     private final PostService postService;
-    private final PostRepository postRepository;
 
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<ThreadGetDTO>> getThreadsByCategory(@PathVariable Integer categoryId, Authentication authentication) {
@@ -41,9 +40,9 @@ public class ThreadController {
         String accessCtrl = threadService.getCategoryAccessCtrl(categoryId);
 
         if(!securityUtil.hasCategoryAccess(accessCtrl, authentication)) {
-            if (authentication == null || !authentication.isAuthenticated()) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication is required to view this category. (Registered users only)");
-            }
+
+            securityUtil.requireAuthentication(authentication);
+
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Permission to view category is denied.");
         }
 
@@ -58,9 +57,9 @@ public class ThreadController {
         String postCtrl = threadService.getCategoryPostCtrl(threadPostDTO.getCategoryId());
 
         if (!securityUtil.hasCategoryAccess(accessCtrl, authentication)) {
-            if (authentication == null || !authentication.isAuthenticated()) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication is required to view this. (Registered users only).");
-            }
+
+            securityUtil.requireAuthentication(authentication);
+
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permission to view here, only dabmins.");
         }
 
@@ -107,9 +106,9 @@ public class ThreadController {
         String accessCtrl = postService.getHostCategoryAccessCtrl(threadId);
 
         if(!securityUtil.hasCategoryAccess(accessCtrl, authentication)) {
-            if (authentication == null || !authentication.isAuthenticated()) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication is required to view this post. (Registered users only)");
-            }
+
+            securityUtil.requireAuthentication(authentication);
+
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Permission to view post is denied.");
         }
 
@@ -119,9 +118,8 @@ public class ThreadController {
 
     @PostMapping("/{threadId}/posts")
     public ResponseEntity<PostGetDTO> createPost(@PathVariable Integer threadId, @Valid @RequestBody PostPostDTO postPostDTO, Authentication authentication) {
-        if(authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication is required to post replies here. (Registered users only)");
-        }
+
+        securityUtil.requireAuthentication(authentication);
 
         boolean canPost = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("post:create"));
 
