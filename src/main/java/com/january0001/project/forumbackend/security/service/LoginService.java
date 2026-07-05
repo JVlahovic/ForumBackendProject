@@ -29,8 +29,13 @@ public class LoginService {
                 });
 
         if (!user.getIsActive()) {
-            log.error("Login failure, this user has not verified their email yet. Verification email dispatched for user.");
-            throw new IllegalArgumentException("Verification email dispatched to your registered, please verify your email and then try logging in again.");
+            log.error("Login failure, this user was a cunt and got banned.");
+            throw new IllegalArgumentException("You have broken the rules and have subsequently been banned. You are no longer allowed to participate in the forum.");
+        }
+
+        if (!user.getEmailIsVerified()) {
+            log.error("Login failure, this user has not verified their email yet. Verification email resend recommended to user");
+            throw new IllegalArgumentException("Please try verifying your email via the registration portal, then try logging in again.");
         }
 
         //.matches method will check whether the password hashes match

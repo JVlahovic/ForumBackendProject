@@ -4,15 +4,15 @@ import com.january0001.project.forumbackend.entity.Role;
 import com.january0001.project.forumbackend.entity.User;
 import com.january0001.project.forumbackend.repository.RoleRepository;
 import com.january0001.project.forumbackend.repository.UserRepository;
-import com.january0001.project.forumbackend.security.config.SecurityConfig;
 import com.january0001.project.forumbackend.security.dto.RegisterRequestDTO;
 import com.january0001.project.forumbackend.security.mapper.UserMapper;
-import com.january0001.project.forumbackend.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Random;
 
 
 @RequiredArgsConstructor
@@ -24,6 +24,7 @@ public class RegisterService {
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public void register (RegisterRequestDTO registerDTO) {
         if(!registerDTO.getTermsAndConditions()) {
@@ -52,11 +53,19 @@ public class RegisterService {
 
         user.setRole(defaultRole);
         user.setIsActive(true);
-        user.setEmailIsVerified(true); //MOCK VALUE, ONCE COMPLETED THE VERIFICATION OF EMAIL STEP THIS SHOULD BE REMOVED AND REPLACED WITH A SOLID FALSE UNTIL THE EMAIL IS VERIFIED.
+        user.setEmailIsVerified(false); //MOCK VALUE, ONCE COMPLETED THE VERIFICATION OF EMAIL STEP THIS SHOULD BE REMOVED AND REPLACED WITH A SOLID FALSE UNTIL THE EMAIL IS VERIFIED. //UPDATE: the email service is now here, so this has been overridden to false by default.
 
         userRepository.save(user);
 
-        log.info("Successfully registered new user: '{}' with ID: {}", user.getUsername(), user.getId());
+        String emailCode = String.format("%04d", new Random().nextInt(9999));
+        user.setVerificationCode(emailCode);
+        user.setVerificationCodeExpiry(LocalDateTime.now().plusMinutes(5));
+
+        userRepository.save(user);
+
+        emailService.sendVerificationCode(user.getEmail(), emailCode);
+
+        log.info("Successfully registered new user: '{}' with ID: {}. Sending verification email.", user.getUsername(), user.getId());
     }
 
 }

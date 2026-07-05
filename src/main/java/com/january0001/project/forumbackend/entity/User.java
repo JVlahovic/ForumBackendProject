@@ -42,6 +42,12 @@ public class User {
     @Column(name = "email_verified", nullable = false)
     private Boolean emailIsVerified;
 
+    @Column(name = "verification_code", length = 4)
+    private String verificationCode;
+
+    @Column(name = "verification_code_expiry")
+    private LocalDateTime verificationCodeExpiry;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role; //hibernate hates me here because fetchType by default is lazy, when I need it not to be. Fixed with a proper query in the repo.

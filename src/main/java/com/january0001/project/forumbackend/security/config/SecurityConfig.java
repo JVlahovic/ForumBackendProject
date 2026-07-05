@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .headers(headers -> headers.contentSecurityPolicy(csp -> csp
                         .policyDirectives("default-src 'self'; script-src 'self'; style-src 'self';")))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/api/register", "/api/login").permitAll() // issue encountered here when making /api/login where an extra slash caused a 403. Make sure that the mapping matches 1:1.
+                        .requestMatchers("/api/register", "/api/login", "/api/emailVerify/verify", "/api/emailVerify/resend").permitAll() // issue encountered here when making /api/login where an extra slash caused a 403. Make sure that the mapping matches 1:1.
                         .requestMatchers(HttpMethod.GET, "/api/thread-categories", "/api/threads/category/{categoryId}").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
