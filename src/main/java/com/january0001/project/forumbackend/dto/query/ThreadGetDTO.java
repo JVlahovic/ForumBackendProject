@@ -18,6 +18,7 @@ public class ThreadGetDTO {
     private LocalDateTime createdAt;
 
     private Integer authorId;
+    private String authorUsername;
     private Integer threadCategoryId;
 
 }

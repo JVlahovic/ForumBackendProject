@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 public class ThreadCategoryGetDTO {
 
-    private Integer Id;
+    private Integer id;
     private String name;
     private String description;
     private Integer position;

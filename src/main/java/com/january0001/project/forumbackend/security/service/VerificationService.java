@@ -1,6 +1,8 @@
 package com.january0001.project.forumbackend.security.service;
 
+import com.january0001.project.forumbackend.entity.Role;
 import com.january0001.project.forumbackend.entity.User;
+import com.january0001.project.forumbackend.repository.RoleRepository;
 import com.january0001.project.forumbackend.repository.UserRepository;
 import com.january0001.project.forumbackend.security.dto.ResendVerificationDTO;
 import com.january0001.project.forumbackend.security.dto.VerifyRequestDTO;
@@ -21,11 +23,14 @@ public class VerificationService {
 
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final RoleRepository roleRepository;
 
 
     public void verify(@Valid VerifyRequestDTO verifyRequestDTO) {
 
         User user = userRepository.findByEmail(verifyRequestDTO.getEmail()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with specified email does not exist."));
+        Role userRole = roleRepository.findById(3).orElseThrow(() -> new IllegalStateException("User role is not found or defined in the database. Check that end and plug the role code in correctly."));
+
         if (user.getEmailIsVerified() == true) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already verified.");
         }
@@ -41,6 +46,7 @@ public class VerificationService {
         user.setEmailIsVerified(true);
         user.setVerificationCode(null);
         user.setVerificationCodeExpiry(null);
+        user.setRole(userRole);
         userRepository.save(user);
 
     }

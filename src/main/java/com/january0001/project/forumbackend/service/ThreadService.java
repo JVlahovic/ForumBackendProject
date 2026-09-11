@@ -43,7 +43,7 @@ public class ThreadService {
 
         ThreadCategory category = threadCategoryRepository.findById(categoryId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
 
-        List<Thread> threadList = threadRepository.findByThreadCategory(category);
+        List<Thread> threadList = threadRepository.findByThreadCategoryWithAuthor(category);
         return threadMapper.toDtoList(threadList);
 
     }

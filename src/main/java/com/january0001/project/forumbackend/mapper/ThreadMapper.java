@@ -15,6 +15,7 @@ public interface ThreadMapper {
     //Importing the Thread entity I made fixed the issue and mapstruct can see it fine now.
     @Mapping(source = "threadCategory.id", target = "threadCategoryId")
     @Mapping(source = "author.id", target = "authorId")
+    @Mapping(source = "author.username", target = "authorUsername")
 
     ThreadGetDTO toDto(Thread thread);
 

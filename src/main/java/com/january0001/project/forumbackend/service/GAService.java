@@ -7,12 +7,18 @@ import com.january0001.project.forumbackend.repository.RoleRepository;
 import com.january0001.project.forumbackend.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GAService {
 
     private final RoleRepository roleRepository;
@@ -39,5 +45,13 @@ public class GAService {
 
         user.setRole(role);
         userRepository.save(user);
+    }
+
+    @Scheduled(fixedRate = 600000)
+    public void cleanupExpiredUnverifiedUsers() {
+        LocalDateTime threshold = LocalDateTime.now().minusMinutes(15);
+        List<User> expired = userRepository.findByEmailIsVerifiedAndVerificationCodeExpiryBefore(false, threshold);
+        userRepository.deleteAll(expired);
+        log.info("Nuked {} expired unverified registrations", expired.size());
     }
 }

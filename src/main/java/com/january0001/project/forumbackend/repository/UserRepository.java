@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,4 +23,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByUsernameWithRole(@Param("username") String username);
 
     Optional<User> findByEmail(String email);
+
+    List<User> findByEmailIsVerifiedAndVerificationCodeExpiryBefore(Boolean emailIsVerified, LocalDateTime expiry);
+
 }
