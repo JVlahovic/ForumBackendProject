@@ -101,7 +101,7 @@ public class ThreadController {
     //POSTS GO BELOW, FOR BETTER ROUTING
 
     @GetMapping("/{threadId}/posts")
-    public ResponseEntity<Page<PostGetDTO>> getPostsByThreadId(@PathVariable Integer threadId, @PageableDefault(size = 10) Pageable pageable, Authentication authentication) {
+    public ResponseEntity<Page<PostGetDTO>> getPostsByThreadId(@PathVariable Integer threadId, @PageableDefault(size = 10, sort = "createdAt") Pageable pageable, Authentication authentication) {
 
         String accessCtrl = postService.getHostCategoryAccessCtrl(threadId);
 
@@ -121,7 +121,7 @@ public class ThreadController {
 
         securityUtil.requireAuthentication(authentication);
 
-        boolean canPost = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("post:create"));
+        boolean canPost = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("post:registered"));
 
         if(!canPost) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to post here.");
@@ -144,6 +144,17 @@ public class ThreadController {
         PostGetDTO response = postService.createPost(postPostDTO, threadId, authentication);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
 
+    }
+
+    @GetMapping("/{threadId}")
+    public ResponseEntity<ThreadGetDTO> getThreadById(@PathVariable Integer threadId, Authentication authentication) {
+        String accessCtrl = postService.getHostCategoryAccessCtrl(threadId);
+        if(!securityUtil.hasCategoryAccess(accessCtrl, authentication)) {
+            securityUtil.requireAuthentication(authentication);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Permission to view post is denied.");
+        }
+        ThreadGetDTO response = threadService.getThreadById(threadId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 

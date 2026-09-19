@@ -10,6 +10,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface PostMapper {
 
+    @Mapping(source = "author.username", target = "authorUsername")
     @Mapping(source = "author.id", target = "authorId")
     PostGetDTO toDto(Post post);
     List<PostGetDTO> toDtoList(List<Post> posts);

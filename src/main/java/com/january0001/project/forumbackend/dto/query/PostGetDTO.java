@@ -20,4 +20,6 @@ public class PostGetDTO {
     private Integer authorId;
     private Integer threadId;
 
+    private String authorUsername;
+
 }

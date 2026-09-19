@@ -91,4 +91,9 @@ public class ThreadService {
         thread.setIsLocked(!thread.getIsLocked());
         return threadMapper.toDto(threadRepository.save(thread));
     }
+
+    public ThreadGetDTO getThreadById(Integer threadId) {
+        Thread thread = threadRepository.findByIdWithAuthor(threadId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not get thread: thread not found"));
+        return threadMapper.toDto(thread);
+    }
 }
