@@ -78,24 +78,22 @@ public class ThreadController {
     }
 
     @DeleteMapping("/{threadId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ThreadGetDTO> deleteThread(@PathVariable Integer threadId) {
+    @PreAuthorize("hasAnyRole('ADMIN','MODERATOR')")     // was hasRole('ADMIN')
+    public ResponseEntity<Void> deleteThread(@PathVariable Integer threadId) {
         threadService.deleteThread(threadId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/pin/{threadId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MODERATOR')")     // optional: mods too
     public ResponseEntity<ThreadGetDTO> togglePin(@PathVariable Integer threadId) {
-        ThreadGetDTO response = threadService.togglePin(threadId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(threadService.togglePin(threadId), HttpStatus.OK);
     }
 
     @PatchMapping("/lock/{threadId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MODERATOR')")     // optional: mods too
     public ResponseEntity<ThreadGetDTO> toggleLock(@PathVariable Integer threadId) {
-        ThreadGetDTO response = threadService.toggleLock(threadId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(threadService.toggleLock(threadId), HttpStatus.OK);
     }
 
     //POSTS GO BELOW, FOR BETTER ROUTING

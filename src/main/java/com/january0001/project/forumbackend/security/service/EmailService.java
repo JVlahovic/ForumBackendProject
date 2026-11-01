@@ -28,6 +28,32 @@ public class EmailService {
         }
     }
 
+    public void sendPasswordResetCode(String email, String code) {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+            helper.setTo(email);
+            helper.setSubject("Your Forum password reset code.");
+            helper.setText(buildPasswordResetCodeEmail(code), true);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            log.error("Failed to send password reset code. {}", e.getMessage());
+        }
+    }
+
+    public void sendNewPassword(String email, String newPassword) {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+            helper.setTo(email);
+            helper.setSubject("Your new Forum password.");
+            helper.setText(buildNewPasswordEmail(newPassword), true);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            log.error("Failed to send new password. {}", e.getMessage());
+        }
+    }
+
     private String buildVerificationEmail(String code) {
         return """
                 <!DOCTYPE html>
@@ -46,5 +72,45 @@ public class EmailService {
                         </body>
                         </html>
                 """;
+    }
+
+    private String buildPasswordResetCodeEmail(String code) {
+        return """
+            <!DOCTYPE html>
+                    <html>
+                    <head><meta charset="UTF-8"></head>
+                    <body style="font-family: Arial; text-align: center; padding: 20px;">
+                        <h2>Password Reset</h2>
+                        <p>Your password reset code is:</p>
+                        <div style="font-size: 32px; font-weight: bold; letter-spacing: 4px;
+                                    padding: 15px; background: #f5f5f5; display: inline-block;
+                                    border-radius: 8px; margin: 15px 0;">
+                            """ + code + """
+                        </div>
+                        <p>This code expires in <strong>5 minutes</strong>.</p>
+                        <p style="color: #777;">If you didn't request this, you can ignore this email.</p>
+                    </body>
+                    </html>
+            """;
+    }
+
+    private String buildNewPasswordEmail(String newPassword) {
+        return """
+            <!DOCTYPE html>
+                    <html>
+                    <head><meta charset="UTF-8"></head>
+                    <body style="font-family: Arial; text-align: center; padding: 20px;">
+                        <h2>Password Reset Complete</h2>
+                        <p>Your new password is:</p>
+                        <div style="font-size: 24px; font-weight: bold; letter-spacing: 2px;
+                                    padding: 15px; background: #f5f5f5; display: inline-block;
+                                    border-radius: 8px; margin: 15px 0;">
+                            """ + newPassword + """
+                        </div>
+                        <p>Please log in and consider changing it.</p>
+                        <p style="color: #777;">If you didn't request this, contact an administrator.</p>
+                    </body>
+                    </html>
+            """;
     }
 }

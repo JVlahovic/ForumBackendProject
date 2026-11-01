@@ -29,13 +29,11 @@ public class ThreadCategoryController {
         List<ThreadCategoryGetDTO> response;
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            response = threadCategoryService.getGuestCategories();
-        }
-        else if (securityUtil.hasModOrAdminAuthority(authentication)) {
-            response = threadCategoryService.getAllCategories();
-        }
-        else {
-            response = threadCategoryService.getRegisteredCategories();
+            response = threadCategoryService.getGuestCategories(authentication);
+        } else if (securityUtil.hasModOrAdminAuthority(authentication)) {
+            response = threadCategoryService.getAllCategories(authentication);
+        } else {
+            response = threadCategoryService.getRegisteredCategories(authentication);
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

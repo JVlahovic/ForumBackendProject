@@ -32,11 +32,12 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseEntity<PostGetDTO> deletePost(@PathVariable Integer postId, Authentication authentication) {
+    public ResponseEntity<Void> deletePost(@PathVariable Integer postId, Authentication authentication) {
 
         securityUtil.requireAuthentication(authentication);
         postService.deletePost(postId, authentication);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
     }
 
 

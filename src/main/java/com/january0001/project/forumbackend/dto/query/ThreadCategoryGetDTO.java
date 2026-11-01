@@ -14,5 +14,8 @@ public class ThreadCategoryGetDTO {
     private String name;
     private String description;
     private Integer position;
+    private Boolean canPost;
+    private String accessCtrl;
+    private String postCtrl;
 
 }

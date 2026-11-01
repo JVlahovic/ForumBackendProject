@@ -11,4 +11,6 @@ public interface RoleRepository extends JpaRepository<Role, Integer> {
 
     Optional<Role> findByIsDefault(Boolean isDefault);
 
+    Optional<Role> findByRoleDescription(String roleDescription);
+
 }

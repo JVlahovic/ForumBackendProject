@@ -1,0 +1,372 @@
+databaseChangeLog:
+- changeSet:
+    id: 1791212742402-1
+    author: January (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: thread_id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: author_id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: content
+            type: TEXT
+        - column:
+            defaultValueComputed: CURRENT_TIMESTAMP
+            name: created_at
+            type: datetime(0)
+        - column:
+            defaultValueComputed: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+            name: modified_at
+            type: datetime(0)
+        - column:
+            defaultValueNumeric: 0
+            name: is_edited
+            type: TINYINT(3)
+        tableName: posts
+- changeSet:
+    id: 1791212742402-2
+    author: January (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+              unique: true
+            name: role_code
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: role_description
+            type: VARCHAR(128)
+        - column:
+            constraints:
+              nullable: false
+            name: is_default
+            type: TINYINT(3)
+        - column:
+            constraints:
+              nullable: false
+            name: permissions
+            type: JSON
+        tableName: role
+- changeSet:
+    id: 1791212742402-3
+    author: January (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: title
+            type: VARCHAR(256)
+        - column:
+            constraints:
+              nullable: false
+            name: category_id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+            name: author_id
+            type: INT
+        - column:
+            defaultValueComputed: CURRENT_TIMESTAMP
+            name: created_at
+            type: datetime(0)
+        - column:
+            defaultValueComputed: CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP
+            name: updated_at
+            type: datetime(0)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: is_pinned
+            type: TINYINT(3)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: is_locked
+            type: TINYINT(3)
+        tableName: thread
+- changeSet:
+    id: 1791212742402-4
+    author: January (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+              unique: true
+            name: name
+            type: VARCHAR(128)
+        - column:
+            name: description
+            type: TEXT
+        - column:
+            defaultValueNumeric: 0
+            name: position
+            type: INT
+        - column:
+            defaultValueComputed: CURRENT_TIMESTAMP
+            name: created_at
+            type: datetime(0)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: view:everyone
+            name: access_ctrl
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            defaultValue: post:admin
+            name: post_ctrl
+            type: VARCHAR(50)
+        tableName: threadcategory
+- changeSet:
+    id: 1791212742402-5
+    author: January (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            constraints:
+              nullable: false
+              unique: true
+            name: username
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+              unique: true
+            name: email
+            type: VARCHAR(128)
+        - column:
+            constraints:
+              nullable: false
+            name: password_hash
+            type: VARCHAR(180)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: CURRENT_TIMESTAMP
+            name: registration_date
+            type: datetime(0)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 1
+            name: is_active
+            type: TINYINT(3)
+        - column:
+            constraints:
+              nullable: false
+            defaultValueNumeric: 0
+            name: email_verified
+            type: TINYINT(3)
+        - column:
+            constraints:
+              nullable: false
+            name: role_id
+            type: INT
+        - column:
+            name: verification_code
+            type: VARCHAR(4)
+        - column:
+            name: verification_code_expiry
+            type: datetime(0)
+        tableName: user
+- changeSet:
+    id: 1791212742402-6
+    author: January (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: author_id
+        indexName: fk_author_id_posts_id_user_idx
+        tableName: posts
+- changeSet:
+    id: 1791212742402-7
+    author: January (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: thread_id
+        indexName: fk_thread_id_posts_id_thread_idx
+        tableName: posts
+- changeSet:
+    id: 1791212742402-8
+    author: January (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: role_id
+        indexName: fk_user_roleID_role_id_idx
+        tableName: user
+- changeSet:
+    id: 1791212742402-9
+    author: January (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: author_id
+        indexName: idx_author
+        tableName: thread
+- changeSet:
+    id: 1791212742402-10
+    author: January (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            name: category_id
+        indexName: idx_category
+        tableName: thread
+- changeSet:
+    id: 1791212742402-11
+    author: January (generated)
+    changes:
+    - createIndex:
+        associatedWith: ''
+        columns:
+        - column:
+            defaultValueComputed: CURRENT_TIMESTAMP
+            name: created_at
+        indexName: idx_created
+        tableName: thread
+- changeSet:
+    id: 1791212742402-12
+    author: January (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: author_id
+        baseTableName: posts
+        constraintName: fk_author_id_posts_id_user
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: user
+        validate: true
+- changeSet:
+    id: 1791212742402-13
+    author: January (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: author_id
+        baseTableName: thread
+        constraintName: fk_author_id_thread_id_user
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: user
+        validate: true
+- changeSet:
+    id: 1791212742402-14
+    author: January (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: category_id
+        baseTableName: thread
+        constraintName: fk_category_id_thread_id_threadcategory
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: threadcategory
+        validate: true
+- changeSet:
+    id: 1791212742402-15
+    author: January (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: thread_id
+        baseTableName: posts
+        constraintName: fk_thread_id_posts_id_thread
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: thread
+        validate: true
+- changeSet:
+    id: 1791212742402-16
+    author: January (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: role_id
+        baseTableName: user
+        constraintName: fk_user_roleID_role_id
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: role
+        validate: true
+

@@ -1,0 +1,12 @@
+services:
+  backend:
+    build: .
+    container_name: forum-backend
+    ports:
+      - '8090:8090'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    env_file:
+      - .env
+    environment:
+      DB_URL: jdbc:mysql://host.docker.internal:3306/forumprojectdb

@@ -26,7 +26,8 @@ public interface ThreadRepository extends JpaRepository<Thread, Integer> {
     @Query("SELECT t FROM Thread t JOIN FETCH t.author WHERE t.id = :id")
     Optional<Thread> findByIdWithAuthor(@Param("id") Integer id);
 
-
-
+    @Query("SELECT t FROM Thread t JOIN FETCH t.author JOIN FETCH t.threadCategory " +
+            "WHERE t.author.username = :username ORDER BY t.createdAt DESC")
+    List<Thread> findByAuthorUsernameWithRefs(@Param("username") String username);
 
 }

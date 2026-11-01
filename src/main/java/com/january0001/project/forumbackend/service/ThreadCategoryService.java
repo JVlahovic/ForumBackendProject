@@ -5,8 +5,10 @@ import com.january0001.project.forumbackend.dto.query.ThreadCategoryGetDTO;
 import com.january0001.project.forumbackend.entity.ThreadCategory;
 import com.january0001.project.forumbackend.mapper.ThreadCategoryMapper;
 import com.january0001.project.forumbackend.repository.ThreadCategoryRepository;
+import com.january0001.project.forumbackend.security.component.SecurityUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,12 +19,11 @@ public class ThreadCategoryService {
 
     private final ThreadCategoryRepository threadCategoryRepository;
     private final ThreadCategoryMapper threadCategoryMapper;
+    private final SecurityUtil securityUtil;
 
-    public List<ThreadCategoryGetDTO> getAllCategories() {
-        List<ThreadCategory> threadCategories = threadCategoryRepository.findAll();
-        return threadCategoryMapper.toDtoList(threadCategories);
+    public List<ThreadCategoryGetDTO> getAllCategories(Authentication auth) {
+        return toDtoWithCanPost(threadCategoryRepository.findAll(), auth);
     }
-
 
     public ThreadCategoryGetDTO createCategory(ThreadCategoryPostDTO postDTO) {
         ThreadCategory threadCategory = threadCategoryMapper.toEntity(postDTO);
@@ -40,13 +41,19 @@ public class ThreadCategoryService {
         threadCategoryRepository.delete(category);
     }
 
-    public List<ThreadCategoryGetDTO> getGuestCategories() {
-        List<ThreadCategory> threadCategories = threadCategoryRepository.findByAccessCtrl("view:everyone");
-        return threadCategoryMapper.toDtoList(threadCategories);
+    public List<ThreadCategoryGetDTO> getGuestCategories(Authentication auth) {
+        return toDtoWithCanPost(threadCategoryRepository.findByAccessCtrl("view:everyone"), auth);
     }
 
-    public List<ThreadCategoryGetDTO> getRegisteredCategories() {
-        List<ThreadCategory> threadCategories = threadCategoryRepository.findByAccessCtrlIn(List.of("view:everyone", "view:registered"));
-        return threadCategoryMapper.toDtoList(threadCategories);
+    public List<ThreadCategoryGetDTO> getRegisteredCategories(Authentication auth) {
+        return toDtoWithCanPost(threadCategoryRepository.findByAccessCtrlIn(List.of("view:everyone", "view:registered")), auth);
+    }
+
+    private List<ThreadCategoryGetDTO> toDtoWithCanPost(List<ThreadCategory> cats, Authentication auth) {
+        List<ThreadCategoryGetDTO> dtos = threadCategoryMapper.toDtoList(cats);
+        for (int i = 0; i < cats.size(); i++) {
+            dtos.get(i).setCanPost(securityUtil.hasPostAccess(cats.get(i).getPostCtrl(), auth));
+        }
+        return dtos;
     }
 }

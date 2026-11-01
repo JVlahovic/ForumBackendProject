@@ -90,8 +90,9 @@ public class PostService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
         User user = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        if(post.getAuthor().getId().equals(user.getId()) && !securityUtil.hasModOrAdminAuthority(authentication)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own post");
+        boolean isAuthor = post.getAuthor().getId().equals(user.getId());
+        if (!isAuthor && !securityUtil.hasModOrAdminAuthority(authentication)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own post.");
         }
 
         postRepository.delete(post);

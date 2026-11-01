@@ -1,13 +1,20 @@
 package com.january0001.project.forumbackend.service;
 
 import com.january0001.project.forumbackend.dto.command.RoleAssignmentDTO;
+import com.january0001.project.forumbackend.dto.query.AdminUserGetDTO;
+import com.january0001.project.forumbackend.dto.query.RoleGetDTO;
 import com.january0001.project.forumbackend.entity.Role;
 import com.january0001.project.forumbackend.entity.User;
+import com.january0001.project.forumbackend.mapper.AdminUserMapper;
+import com.january0001.project.forumbackend.mapper.RoleMapper;
 import com.january0001.project.forumbackend.repository.RoleRepository;
 import com.january0001.project.forumbackend.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -23,6 +30,9 @@ public class GAService {
 
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final AdminUserMapper adminUserMapper;
+    private final RoleMapper roleMapper;
+
 
 
     public void banUser(Integer userId) {
@@ -47,6 +57,15 @@ public class GAService {
         userRepository.save(user);
     }
 
+    public Page<AdminUserGetDTO> getUsers(String currentUsername, Pageable pageable) {
+        return userRepository.findAllWithRoleExcluding(currentUsername, pageable).map(adminUserMapper::toDto);
+    }
+
+    public List<RoleGetDTO> getRoles() {
+        return roleMapper.toDtoList(roleRepository.findAll(Sort.by("id")));
+    }
+
+    //Unverified email nuker so users can re-register at a later time, in case email sending fails.
     @Scheduled(fixedRate = 600000)
     public void cleanupExpiredUnverifiedUsers() {
         LocalDateTime threshold = LocalDateTime.now().minusMinutes(15);

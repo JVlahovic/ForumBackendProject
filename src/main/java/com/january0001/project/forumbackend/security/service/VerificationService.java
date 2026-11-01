@@ -29,7 +29,7 @@ public class VerificationService {
     public void verify(@Valid VerifyRequestDTO verifyRequestDTO) {
 
         User user = userRepository.findByEmail(verifyRequestDTO.getEmail()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with specified email does not exist."));
-        Role userRole = roleRepository.findById(3).orElseThrow(() -> new IllegalStateException("User role is not found or defined in the database. Check that end and plug the role code in correctly."));
+        Role userRole = roleRepository.findByRoleDescription("User").orElseThrow(() -> new IllegalStateException("User role is not found or defined in the database."));
 
         if (user.getEmailIsVerified() == true) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already verified.");

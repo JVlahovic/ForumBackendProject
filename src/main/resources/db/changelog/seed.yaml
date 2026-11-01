@@ -1,0 +1,88 @@
+databaseChangeLog:
+  - changeSet:
+      id: seed-roles
+      author: january
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM role
+      changes:
+        - insert:
+            tableName: role
+            columns:
+              - column: { name: id, valueNumeric: 1 }
+              - column: { name: role_code, valueNumeric: 1 }
+              - column: { name: role_description, value: Admin }
+              - column: { name: is_default, valueBoolean: false }
+              - column: { name: permissions, value: '{"capabilities":["post:registered","post:moderator","post:admin","post:delete_own","post:delete_others","thread:lock","thread:delete","user:kick","user:ban","view:registered","view:admin","view:moderator","view:adminpanel"]}' }
+        - insert:
+            tableName: role
+            columns:
+              - column: { name: id, valueNumeric: 2 }
+              - column: { name: role_code, valueNumeric: 2 }
+              - column: { name: role_description, value: Moderator }
+              - column: { name: is_default, valueBoolean: false }
+              - column: { name: permissions, value: '{"capabilities":["post:registered","post:moderator","post:delete_own","view:registered","user:kick","user:ban","thread:lock","view:moderator"]}' }
+        - insert:
+            tableName: role
+            columns:
+              - column: { name: id, valueNumeric: 3 }
+              - column: { name: role_code, valueNumeric: 3 }
+              - column: { name: role_description, value: User }
+              - column: { name: is_default, valueBoolean: false }
+              - column: { name: permissions, value: '{"capabilities":["post:registered","post:delete_own","view:registered"]}' }
+        - insert:
+            tableName: role
+            columns:
+              - column: { name: id, valueNumeric: 4 }
+              - column: { name: role_code, valueNumeric: 4 }
+              - column: { name: role_description, value: Guest }
+              - column: { name: is_default, valueBoolean: true }
+              - column: { name: permissions, value: '{"capabilities":["view:everyone"]}' }
+
+  - changeSet:
+      id: seed-categories
+      author: january
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM threadcategory
+      changes:
+        - insert:
+            tableName: threadcategory
+            columns:
+              - column: { name: id, valueNumeric: 1 }
+              - column: { name: name, value: "General Forum" }
+              - column: { name: description, value: "General Forum antics go here, no specific topics, reserved for random topics" }
+              - column: { name: position, valueNumeric: 2 }
+              - column: { name: access_ctrl, value: "view:registered" }
+              - column: { name: post_ctrl, value: "post:registered" }
+        - insert:
+            tableName: threadcategory
+            columns:
+              - column: { name: id, valueNumeric: 2 }
+              - column: { name: name, value: "Rules" }
+              - column: { name: description, value: "Rules and Administrative Announcements go here" }
+              - column: { name: position, valueNumeric: 1 }
+              - column: { name: access_ctrl, value: "view:everyone" }
+              - column: { name: post_ctrl, value: "post:admin" }
+        - insert:
+            tableName: threadcategory
+            columns:
+              - column: { name: id, valueNumeric: 3 }
+              - column: { name: name, value: "Moderator Panel" }
+              - column: { name: description, value: "Moderator Panel for Internal Discussion" }
+              - column: { name: position, valueNumeric: 3 }
+              - column: { name: access_ctrl, value: "view:moderator" }
+              - column: { name: post_ctrl, value: "post:moderator" }
+        - insert:
+            tableName: threadcategory
+            columns:
+              - column: { name: id, valueNumeric: 4 }
+              - column: { name: name, value: "Announcements" }
+              - column: { name: description, value: "General Announcement Panel" }
+              - column: { name: position, valueNumeric: 4 }
+              - column: { name: access_ctrl, value: "view:everyone" }
+              - column: { name: post_ctrl, value: "post:admin" }
