@@ -5,13 +5,17 @@ import com.january0001.project.forumbackend.dto.query.ThreadGetDTO;
 import com.january0001.project.forumbackend.entity.Post;
 import com.january0001.project.forumbackend.entity.ThreadCategory;
 import com.january0001.project.forumbackend.entity.User;
+import com.january0001.project.forumbackend.filter.ThreadFilter;
 import com.january0001.project.forumbackend.mapper.ThreadMapper;
 import com.january0001.project.forumbackend.repository.ThreadCategoryRepository;
 import com.january0001.project.forumbackend.repository.ThreadRepository;
 import com.january0001.project.forumbackend.repository.UserRepository;
 import com.january0001.project.forumbackend.entity.Thread;
+import com.january0001.project.forumbackend.security.component.SecurityUtil;
+import com.january0001.project.forumbackend.specification.ThreadSpecification;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -28,6 +32,7 @@ public class ThreadService {
     private final ThreadRepository threadRepository;
     private final ThreadMapper threadMapper;
     private final UserRepository userRepository;
+    private final SecurityUtil securityUtil;
 
     //Because threads are inside categories, I need to first make sure the applicable category exists.
     //Might help me rule out odd cases later if the funny dementia strikes again.
@@ -96,4 +101,18 @@ public class ThreadService {
         Thread thread = threadRepository.findByIdWithAuthor(threadId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not get thread: thread not found"));
         return threadMapper.toDto(thread);
     }
+
+    public List<ThreadGetDTO> searchThreads(String title, Authentication authentication) {
+        List<String> allowed;
+        if (authentication == null || !authentication.isAuthenticated()) {
+            allowed = List.of("view:everyone");
+        } else if (securityUtil.hasModOrAdminAuthority(authentication)) {
+            allowed = null;
+        } else {
+            allowed = List.of("view:everyone", "view:registered");
+        }
+        ThreadSpecification spec = new ThreadSpecification(new ThreadFilter(title, allowed));
+        return threadMapper.toDtoList(threadRepository.findAll(spec, Sort.by("createdAt").descending()));
+    }
+
 }

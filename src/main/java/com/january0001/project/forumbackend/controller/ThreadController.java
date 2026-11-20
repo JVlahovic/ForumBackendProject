@@ -155,6 +155,12 @@ public class ThreadController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<ThreadGetDTO>> searchThreads(
+            @RequestParam(required = false) String title,
+            Authentication authentication) {
+        return new ResponseEntity<>(threadService.searchThreads(title, authentication), HttpStatus.OK);
+    }
 
 
 }

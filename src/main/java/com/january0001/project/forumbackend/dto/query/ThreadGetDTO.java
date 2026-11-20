@@ -21,4 +21,6 @@ public class ThreadGetDTO {
     private String authorUsername;
     private Integer threadCategoryId;
 
+    private String threadCategoryName;
+
 }

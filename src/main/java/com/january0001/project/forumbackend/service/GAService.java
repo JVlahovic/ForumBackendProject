@@ -3,12 +3,19 @@ package com.january0001.project.forumbackend.service;
 import com.january0001.project.forumbackend.dto.command.RoleAssignmentDTO;
 import com.january0001.project.forumbackend.dto.query.AdminUserGetDTO;
 import com.january0001.project.forumbackend.dto.query.RoleGetDTO;
+import com.january0001.project.forumbackend.dto.query.ThreadGetDTO;
 import com.january0001.project.forumbackend.entity.Role;
 import com.january0001.project.forumbackend.entity.User;
+import com.january0001.project.forumbackend.filter.ThreadFilter;
+import com.january0001.project.forumbackend.filter.UserFilter;
 import com.january0001.project.forumbackend.mapper.AdminUserMapper;
 import com.january0001.project.forumbackend.mapper.RoleMapper;
+import com.january0001.project.forumbackend.mapper.ThreadMapper;
 import com.january0001.project.forumbackend.repository.RoleRepository;
+import com.january0001.project.forumbackend.repository.ThreadRepository;
 import com.january0001.project.forumbackend.repository.UserRepository;
+import com.january0001.project.forumbackend.specification.ThreadSpecification;
+import com.january0001.project.forumbackend.specification.UserSpecification;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,9 +37,11 @@ public class GAService {
 
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final ThreadRepository threadRepository;
+
+    private final ThreadMapper threadMapper;
     private final AdminUserMapper adminUserMapper;
     private final RoleMapper roleMapper;
-
 
 
     public void banUser(Integer userId) {
@@ -57,10 +66,6 @@ public class GAService {
         userRepository.save(user);
     }
 
-    public Page<AdminUserGetDTO> getUsers(String currentUsername, Pageable pageable) {
-        return userRepository.findAllWithRoleExcluding(currentUsername, pageable).map(adminUserMapper::toDto);
-    }
-
     public List<RoleGetDTO> getRoles() {
         return roleMapper.toDtoList(roleRepository.findAll(Sort.by("id")));
     }
@@ -73,4 +78,10 @@ public class GAService {
         userRepository.deleteAll(expired);
         log.info("Nuked {} expired unverified registrations", expired.size());
     }
+
+    public Page<AdminUserGetDTO> getUsers(UserFilter filter, Pageable pageable) {
+        UserSpecification spec = new UserSpecification(filter);
+        return userRepository.findAll(spec, pageable).map(adminUserMapper::toDto);
+    }
+
 }

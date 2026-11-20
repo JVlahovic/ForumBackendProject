@@ -16,6 +16,7 @@ public interface ThreadMapper {
     @Mapping(source = "threadCategory.id", target = "threadCategoryId")
     @Mapping(source = "author.id", target = "authorId")
     @Mapping(source = "author.username", target = "authorUsername")
+    @Mapping(source = "threadCategory.name", target = "threadCategoryName")
 
     ThreadGetDTO toDto(Thread thread);
 

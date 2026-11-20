@@ -3,12 +3,16 @@ package com.january0001.project.forumbackend.controller;
 import com.january0001.project.forumbackend.dto.command.RoleAssignmentDTO;
 import com.january0001.project.forumbackend.dto.query.AdminUserGetDTO;
 import com.january0001.project.forumbackend.dto.query.RoleGetDTO;
+import com.january0001.project.forumbackend.dto.query.ThreadGetDTO;
+import com.january0001.project.forumbackend.filter.ThreadFilter;
+import com.january0001.project.forumbackend.filter.UserFilter;
 import com.january0001.project.forumbackend.service.GAService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,8 +53,13 @@ public class GAController {
 
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<AdminUserGetDTO>> getUsers(@PageableDefault(size = 10, sort = "id") Pageable pageable, Authentication authentication) {
-        return new ResponseEntity<>(gaService.getUsers(authentication.getName(), pageable), HttpStatus.OK);
+    public ResponseEntity<Page<AdminUserGetDTO>> getUsers(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) Integer roleId,
+            @PageableDefault(size = 10, sort = "id") Pageable pageable,
+            Authentication authentication) {
+        UserFilter filter = new UserFilter(username, roleId, authentication.getName());
+        return new ResponseEntity<>(gaService.getUsers(filter, pageable), HttpStatus.OK);
     }
 
     @GetMapping("/roles")
@@ -58,6 +67,7 @@ public class GAController {
     public ResponseEntity<List<RoleGetDTO>> getRoles() {
         return new ResponseEntity<>(gaService.getRoles(), HttpStatus.OK);
     }
+
 
 
 }
